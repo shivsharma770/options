@@ -1,0 +1,19 @@
+# Normalize line endings to LF in both the repository and the working tree.
+#
+# This project is developed on Linux / WSL. Editing through the Windows
+# filesystem layer was rewriting files with CRLF, which made `git status`
+# show every file as modified (a whole-tree line-ending diff) even when only
+# a few lines actually changed. Forcing LF ends that churn.
+#
+# `text=auto` lets Git auto-detect text vs binary, so genuinely binary files
+# are never touched; `eol=lf` pins the working-tree ending to LF regardless of
+# core.autocrlf on the machine.
+* text=auto eol=lf
+
+# Belt-and-suspenders: never normalize known-binary assets.
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.pdf  binary
+*.ico  binary

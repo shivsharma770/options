@@ -1,0 +1,15 @@
+# clangd language-server configuration (editor diagnostics only — the build
+# itself is driven by CMake; see README).
+#
+# CMake already emits build/compile_commands.json (CMAKE_EXPORT_COMPILE_COMMANDS
+# is ON in CMakeLists.txt), which clangd uses for full, per-file flags once the
+# project has been configured. The overlay below is a belt-and-suspenders
+# default that is always applied on top: it guarantees clangd parses as C++20
+# and can resolve <ore/...> headers even before the first CMake configure, or
+# when it cannot infer a header's flags from an including translation unit.
+#
+# Without it, clangd falls back to an older language standard and reports
+# spurious errors on the C++20 features this codebase uses — requires-clauses
+# (e.g. HistoricalResearchEngine::run), designated initializers, and <numbers>.
+CompileFlags:
+  Add: [-std=c++20, -Iinclude]
