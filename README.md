@@ -1,8 +1,7 @@
 # OptionResearchEngine
 
 A modular C++20 quantitative finance research engine for pricing, analyzing,
-and researching options. This is an **academic software engineering
-project**, not a trading bot.
+and researching options. 
 
 > The CMake project is named `OptionResearchEngine`; the compiled library is
 > `ore` (aliased `ore::ore`) and the C++ namespace root is `ore::`.
