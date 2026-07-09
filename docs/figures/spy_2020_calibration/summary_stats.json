@@ -1,0 +1,51 @@
+{
+  "underlying": "SPY",
+  "period": {
+    "start": "2020-01-02",
+    "end": "2020-12-31",
+    "trading_days": 250
+  },
+  "calibration": {
+    "overall_iv_rmse_vs_provider": 0.19815172564729125,
+    "overall_iv_mae_vs_provider": 0.053462858884175055,
+    "mean_daily_iv_rmse": 0.1785937065923166,
+    "mean_daily_iv_mae": 0.0528037544992283,
+    "median_daily_iv_rmse": 0.17789416389208984,
+    "worst_daily_iv_rmse": 0.48962953382102214,
+    "worst_day": "2020-03-19",
+    "mean_price_solver_residual": 1.4117038886510137e-11,
+    "by_regime": {
+      "pre-crash (Jan 2 - Feb 19)": 0.20322820128228478,
+      "crash    (Feb 20 - Apr 30)": 0.23081252487807627,
+      "recovery (May 1 - Dec 31)": 0.18551199488223583
+    }
+  },
+  "atm_term_structure_30d": {
+    "min": 0.0904817448757944,
+    "max": 0.7511438114379178,
+    "peak_date": "2020-03-16",
+    "year_start": 0.1043905509859178,
+    "year_end": 0.1809025834825633
+  },
+  "smile_curvature_30d": {
+    "mean": 3.294531939366658,
+    "min": -3.695326037062182,
+    "max": 8.981568968373834,
+    "at_stress": -1.4827064974778823
+  },
+  "risk_reversal_25d_30d": {
+    "mean": -0.1044246674977395,
+    "min": -0.3172806498761838,
+    "max": -0.0301672163034423,
+    "most_negative_date": "2020-03-17"
+  },
+  "butterfly_25d_30d": {
+    "mean": 0.00578339303399585,
+    "min": -0.0454008510706188,
+    "max": 0.0379467906865859
+  },
+  "skew_vol_correlation": {
+    "corr_rr_atm": -0.941172207857176,
+    "corr_curvature_atm": -0.735433021892387
+  }
+}
