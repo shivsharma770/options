@@ -1,0 +1,6 @@
+# Milestone 2 dependencies.
+#
+# Pinned to floors that support the APIs the downloaders use. Bump
+# deliberately (never blindly).
+yfinance>=0.2.40,<0.3
+pandas>=2.0,<3.0

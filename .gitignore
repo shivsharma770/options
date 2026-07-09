@@ -1,0 +1,82 @@
+# Build output
+build/
+build-*/
+out/
+install/
+_deps/
+
+# CMake artifacts
+CMakeCache.txt
+CMakeFiles/
+CMakeUserPresets.json
+CTestTestfile.cmake
+cmake_install.cmake
+compile_commands.json
+
+# Visual Studio / MSVC
+.vs/
+*.pdb
+*.ilk
+*.obj
+*.exp
+*.lib
+*.dll
+*.exe
+Debug/
+Release/
+x64/
+x86/
+
+# Unix compilers
+*.o
+*.a
+*.so
+*.dylib
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Python (for future milestones)
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# Local market data & engine outputs (do not commit).
+#
+# The `data/` tree is organised as:
+#   data/historical/<ticker>/  bulk historical archives (multi-GB, per-ticker)
+#   data/raw/                  vendor snapshots downloaded at run time
+#   data/processed/            intermediate/normalised extracts
+#   data/generated/            everything the engine produces: benchmark
+#                              reports, calibration tables, research CSVs,
+#                              plots -- default output root for every module
+#
+# Standard "keep the tree, ignore the contents" pattern: exclude everything
+# below the four roots, then re-include directory descents and .gitkeep
+# sentinels so the skeleton stays in git for fresh clones.
+data/raw/**
+data/processed/**
+data/generated/**
+data/historical/**
+
+!data/raw/**/
+!data/processed/**/
+!data/generated/**/
+!data/historical/**/
+!data/**/.gitkeep
+!data/README.md
+
+# Legacy: `spy_eod_*` archives at the repo root (before the reorg they
+# lived here). Kept for backwards compatibility with clones that
+# haven't been re-organised yet.
+/spy_eod_*/
+
+# OS junk
+.DS_Store
+Thumbs.db

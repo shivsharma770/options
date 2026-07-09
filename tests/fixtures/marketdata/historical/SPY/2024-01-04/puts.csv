@@ -1,0 +1,2 @@
+contract_symbol,expiration,strike,option_type,bid,ask,last,volume,open_interest,implied_volatility,in_the_money,last_trade_date
+SPY240202P00470000,2024-02-02,470.0,put,4.50,4.65,4.58,2300,6000,0.1240,false,2024-01-04T15:59:00Z

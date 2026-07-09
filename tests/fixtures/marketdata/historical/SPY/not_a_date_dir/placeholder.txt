@@ -1,0 +1,2 @@
+Placeholder inside a directory whose name does not parse as YYYY-MM-DD.
+list_dates() must silently skip this directory.

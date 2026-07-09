@@ -1,0 +1,3 @@
+# ore::utils — reserved for cross-cutting utilities that don't fit any
+# domain module (small helpers, string utilities, etc.).
+# No headers yet.

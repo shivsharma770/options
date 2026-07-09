@@ -1,0 +1,2 @@
+valuation_date,underlying_symbol,exchange,asset_type,spot,dividend_yield,risk_free_rate,currency,timezone
+2024-01-03,SPY,NYSEARCA,ETF,468.50,0.0140,0.0525,USD,America/New_York

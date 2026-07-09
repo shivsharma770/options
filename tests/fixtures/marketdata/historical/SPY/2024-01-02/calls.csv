@@ -1,0 +1,4 @@
+contract_symbol,expiration,strike,option_type,bid,ask,last,volume,open_interest,implied_volatility,in_the_money,last_trade_date
+SPY240202C00460000,2024-02-02,460.0,call,12.10,12.25,12.18,3200,8100,0.1195,true,2024-01-02T15:59:00Z
+SPY240202C00470000,2024-02-02,470.0,call,4.80,4.95,4.88,4100,9600,0.1150,false,2024-01-02T15:59:00Z
+SPY240202C00480000,2024-02-02,480.0,call,1.15,1.22,1.18,2500,6300,0.1112,false,2024-01-02T15:59:00Z
