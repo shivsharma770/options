@@ -25,6 +25,7 @@
 
 #include <gtest/gtest.h>
 
+#include <algorithm>
 #include <chrono>
 #include <cmath>
 #include <limits>
@@ -96,7 +97,14 @@ TEST(ImpliedVolatilityRoundTripTest, RecoversKnownSigmaAcrossParameterGrid) {
     const std::vector<double> times{0.10, 0.50, 1.00, 3.00};
     const std::vector<OptionType> types{OptionType::Call, OptionType::Put};
 
-    ImpliedVolatilitySolver solver;
+    // Recovered-sigma error ~ price_residual / Vega. The grid's minimum
+    // Vega (low vol, moderate moneyness, e.g. sigma=0.05 / S=120 / K=100)
+    // is ~2e-5 -- much smaller than a first guess suggests -- so the
+    // default 1e-10 price tolerance leaves a ~5e-6 sigma error, above the
+    // 1e-6 assertion below. Tightening the price residual to 1e-12 pulls
+    // the worst-case sigma error down to ~2e-8 while still converging on
+    // every grid point.
+    ImpliedVolatilitySolver solver{ImpliedVolatilitySolver::Config{.tolerance = 1e-12}};
 
     for (double sigma_true : sigmas)
     for (double S           : spots)
@@ -123,6 +131,20 @@ TEST(ImpliedVolatilityRoundTripTest, RecoversKnownSigmaAcrossParameterGrid) {
         // Any positive sigma reproduces them within tolerance, so the
         // "recovered sigma" is not uniquely defined.
         if (market < 1e-8) continue;
+
+        // Deep-ITM analog of the same degeneracy: when the option is so far
+        // in the money that its extrinsic (time) value is below what
+        // `double` resolves against the ~intrinsic price, BS prices it at
+        // exactly the discounted-intrinsic lower bound. Sigma is then
+        // unrecoverable (every small sigma gives the same price), and the
+        // solver correctly returns the trivial sigma = 0. This happens on
+        // the grid for deep-ITM puts at sigma_true = 0.05, short T.
+        const double disc_S = in.spot   * std::exp(-in.dividend_yield * in.time_to_expiry);
+        const double disc_K = in.strike * std::exp(-in.rate           * in.time_to_expiry);
+        const double lower  = (type == OptionType::Call)
+                                  ? std::max(0.0, disc_S - disc_K)
+                                  : std::max(0.0, disc_K - disc_S);
+        if (market - lower < 1e-8) continue;
 
         const auto r_iv = solver.solve(in, market);
 
@@ -655,8 +677,12 @@ TEST(ImpliedVolatilityPerformanceTest, NewtonConvergesInFewIterationsForATM) {
 }
 
 TEST(ImpliedVolatilityPerformanceTest, SolveHandlesPricesNearArbitrageBounds) {
-    // A price barely above the lower bound should still converge cleanly,
-    // even though such prices imply a very small sigma.
+    // A price barely above the lower bound should still converge cleanly.
+    // Note: "near the lower bound" does NOT imply "small sigma" for a
+    // deep-ITM option — its extrinsic value is small even at normal vol, so
+    // the 0.05 margin here corresponds to sigma ~ 0.30, not a tiny value.
+    // The invariant that actually matters is that the solver converges and
+    // the recovered vol reprices to the input.
     ImpliedVolatilitySolver solver;
     auto in = canonical_call();
     in.strike = 50.0;  // deep ITM
@@ -666,5 +692,8 @@ TEST(ImpliedVolatilityPerformanceTest, SolveHandlesPricesNearArbitrageBounds) {
     const auto r_iv = solver.solve(in, market);
     ASSERT_TRUE(r_iv.converged());
     EXPECT_GT(r_iv.root, 0.0);
-    EXPECT_LT(r_iv.root, 0.10);  // small implied vol
+
+    auto repriced = in;
+    repriced.volatility = r_iv.root;
+    EXPECT_NEAR(BlackScholesEngine{}.price(repriced).price, market, 1e-8);
 }

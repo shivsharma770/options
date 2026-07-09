@@ -28,6 +28,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
+#include <limits>
 #include <stdexcept>
 
 #include <ore/numerics/solver_result.hpp>
@@ -128,9 +129,19 @@ public:
             }
             // If the bracket collapses below what `double` can distinguish,
             // treat it as converged at floating-point precision. Prevents
-            // an infinite loop for functions whose absolute-value floor is
-            // above `tolerance`.
-            if (mid == a || mid == b) {
+            // a needless run to `max_iterations` for functions whose
+            // absolute-value floor is above `tolerance`. Two collapse
+            // conditions: `mid == a || mid == b` catches exact adjacency
+            // (a symmetric bracket around the root); the width floor also
+            // catches the case where the sign change sits *on* an endpoint
+            // (e.g. a step function bracketed as [a, 0]), where the
+            // midpoint keeps halving toward the fixed endpoint without ever
+            // coinciding with it until subnormal underflow ~1074 iterations
+            // later.
+            const double width_floor =
+                std::numeric_limits<double>::epsilon()
+                * std::max({std::abs(a), std::abs(b), 1.0});
+            if (mid == a || mid == b || (b - a) <= width_floor) {
                 return {mid, i + 1, SolverStatus::Converged, std::abs(fm)};
             }
 

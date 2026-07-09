@@ -62,7 +62,7 @@ namespace ore::numerics {
  * @param rel_tol  Relative tolerance. Must be `>= 0`.
  *
  * @return `true` iff the values agree within the combined tolerance.
- *         Returns `false` if either input is NaN.
+ *         Returns `false` if either input is non-finite (NaN or +/-inf).
  */
 [[nodiscard]] inline bool approximately_equal(
     double a,
@@ -70,7 +70,12 @@ namespace ore::numerics {
     double abs_tol,
     double rel_tol) noexcept
 {
-    if (std::isnan(a) || std::isnan(b)) return false;
+    // Reject any non-finite operand. NaN already compares false to
+    // everything, but an infinite operand must be rejected explicitly:
+    // otherwise the combined bound below degenerates to `inf <= inf`
+    // (both `diff` and `scale` become +inf), which is `true` and would
+    // wrongly report e.g. `approximately_equal(inf, 1.0, ...)`.
+    if (!std::isfinite(a) || !std::isfinite(b)) return false;
     const double diff = std::abs(a - b);
     const double scale = std::max(std::abs(a), std::abs(b));
     return diff <= abs_tol + rel_tol * scale;

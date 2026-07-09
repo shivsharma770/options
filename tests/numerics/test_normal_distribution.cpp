@@ -153,10 +153,18 @@ TEST(NormalInverseCdfTest, KnownQuantiles) {
 
 TEST(NormalInverseCdfTest, SymmetryAroundOneHalf) {
     // Phi^-1(1 - p) = -Phi^-1(p)
+    //
+    // The tolerance is 1e-10 rather than machine-epsilon-tight because the
+    // symmetry is probed through `1.0 - p`, which is not the exact mirror
+    // of `p`: for small `p` the subtraction rounds by ~1 ULP, and in the
+    // steep tail (where d/dp of the inverse CDF is large, ~1/phi) that ULP
+    // is amplified into an ~1e-11 asymmetry. That is a property of the
+    // `1.0 - p` input construction, not of the approximation, which is
+    // exactly antisymmetric in `q = p - 0.5`.
     for (double p : {1e-6, 1e-3, 0.01, 0.1, 0.25, 0.4, 0.499}) {
         const double left  = NormalDistribution::inverse_cdf(p);
         const double right = NormalDistribution::inverse_cdf(1.0 - p);
-        EXPECT_NEAR(right, -left, 1e-13) << "asymmetry at p=" << p;
+        EXPECT_NEAR(right, -left, 1e-10) << "asymmetry at p=" << p;
     }
 }
 
@@ -200,9 +208,13 @@ TEST(NormalInverseCdfTest, ExtremeTailBoundaryStaysAccurate) {
     // The moderate/extreme-tail boundary is at r = sqrt(-log(p)) = 5,
     // i.e. p ~ exp(-25) ~ 1.4e-11. Both branches should give consistent
     // values against known R quantiles just inside/outside that region.
-    // R: qnorm(1e-11) ~ -6.706, qnorm(1e-13) ~ -7.349
+    // R: qnorm(1e-11) ~ -6.706, qnorm(1e-13) ~ -7.349. The 1e-13 reference
+    // below is the high-precision value: cdf(-7.348796102800678) round-trips
+    // to exactly 1e-13 (an independent bisection on the erfc-based CDF gives
+    // the same root). The previous constant (-7.3487545100050696) was wrong
+    // by ~4e-5 -- its CDF is 1.0003e-13, not 1e-13.
     EXPECT_NEAR(NormalDistribution::inverse_cdf(1e-11), -6.7060231554951654, 1e-9);
-    EXPECT_NEAR(NormalDistribution::inverse_cdf(1e-13), -7.3487545100050696, 1e-9);
+    EXPECT_NEAR(NormalDistribution::inverse_cdf(1e-13), -7.348796102800678, 1e-9);
 }
 
 TEST(NormalInverseCdfTest, EndpointsReturnInfinity) {

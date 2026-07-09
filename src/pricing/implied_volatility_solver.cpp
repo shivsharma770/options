@@ -119,6 +119,20 @@ double compute_initial_guess(
  * against a zero-time price is degenerate (and useless).
  */
 void validate_inputs(const BlackScholesEngine::Inputs& in) {
+    // Validate the contract fields the solver itself consumes *before*
+    // any pricing. The arbitrage-bound short-circuit below reaches
+    // `compute_lower_bound`/`compute_upper_bound` (which use spot and
+    // strike) before the engine's own validation would ever run, so a
+    // non-positive spot or strike must be rejected here or it would slip
+    // through as a bogus "converged at sigma = 0" result.
+    if (!(in.spot > 0.0)) {
+        throw std::invalid_argument(
+            "ImpliedVolatilitySolver: spot must be > 0");
+    }
+    if (!(in.strike > 0.0)) {
+        throw std::invalid_argument(
+            "ImpliedVolatilitySolver: strike must be > 0");
+    }
     if (!(in.time_to_expiry > 0.0)) {
         throw std::invalid_argument(
             "ImpliedVolatilitySolver: time_to_expiry must be > 0 "

@@ -338,8 +338,12 @@ TEST(BlackScholesFiniteDiffTest, GammaMatchesAnalytical) {
         auto in = canonical_call();
         in.spot = S;
         const double analytical = engine.price(in).greeks.gamma;
-        const double h = 1e-2 * S;  // larger h for second-order FD to
-                                     // balance truncation vs rounding
+        // h = 0.1% of spot. The central second difference has O(h^2)
+        // truncation error: at 1% of spot that is ~1e-4 to 3e-4 relative
+        // (right at / above the tolerance below), while at 0.1% it drops to
+        // ~1e-6 -- still far from the cancellation-dominated regime, which
+        // only bites below ~1e-3% of spot for this stencil.
+        const double h = 1e-3 * S;
         auto up = in; up.spot += h;
         auto dn = in; dn.spot -= h;
         const double numerical =

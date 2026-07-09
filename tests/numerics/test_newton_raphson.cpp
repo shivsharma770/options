@@ -13,7 +13,12 @@ using ore::numerics::SolverStatus;
 // ---- Textbook problems ----------------------------------------------------
 
 TEST(NewtonRaphsonTest, FindsSquareRootOfTwo) {
-    const NewtonRaphsonSolver solver;
+    // Convergence is on the *residual* |f(x)| < tolerance, so to assert a
+    // 1e-12 error on the *root* the residual tolerance must be tighter than
+    // 1e-12 * |f'(root)| = 1e-12 * 2*sqrt(2) ~ 2.8e-12. The default 1e-10
+    // stops one Newton step early (root error ~1.6e-12); 1e-13 lets the
+    // quadratic iteration take that final step.
+    const NewtonRaphsonSolver solver{{.tolerance = 1e-13}};
     const auto f      = [](double x) { return x * x - 2.0; };
     const auto fprime = [](double x) { return 2.0 * x; };
 
