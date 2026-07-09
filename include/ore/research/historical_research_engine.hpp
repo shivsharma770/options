@@ -114,6 +114,18 @@ public:
     };
 
     /**
+     * @brief The default `Config` used when a caller omits it.
+     *
+     * Defined out-of-line so the constructor's default argument can be
+     * a plain function call (`= default_config()`) rather than an
+     * in-class `Config{}` braced-init. GCC rejects the braced form here
+     * because it would evaluate `Config`'s default member initializers
+     * before this enclosing class is complete; the call defers that to
+     * the (already-complete) point of definition.
+     */
+    [[nodiscard]] static Config default_config();
+
+    /**
      * @brief Construct an engine over an existing dataset.
      *
      * @param dataset  Dataset to iterate. Held by const reference —
@@ -122,7 +134,7 @@ public:
      * @param config   Run configuration. Copied.
      */
     HistoricalResearchEngine(const ore::marketdata::HistoricalDataset& dataset,
-                             Config config = {}) noexcept
+                             Config config = default_config()) noexcept
         : dataset_(dataset), config_(std::move(config)) {}
 
     /**

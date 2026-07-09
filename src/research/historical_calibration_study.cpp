@@ -41,7 +41,10 @@ using ore::analytics::VolatilitySmile;
 using ore::analytics::VolatilitySurface;
 
 /// ISO-8601 date formatter, sharing the `ResearchCsvWriter` conventions.
-[[nodiscard]] std::string fmt_date(std::chrono::year_month_day d) {
+/// Retained as a convenience alias even though callers currently reach
+/// for `ResearchCsvWriter::date` directly; `[[maybe_unused]]` keeps the
+/// `-Werror=unused-function` build clean without deleting it.
+[[maybe_unused, nodiscard]] std::string fmt_date(std::chrono::year_month_day d) {
     return ResearchCsvWriter::date(d);
 }
 

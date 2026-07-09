@@ -12,6 +12,7 @@
 
 #include <chrono>
 #include <cmath>
+#include <functional>
 #include <limits>
 #include <stdexcept>
 
@@ -592,13 +593,17 @@ TEST(BlackScholesInvalidInputTest, RejectsNegativeTimeToExpiry) {
 TEST(BlackScholesInvalidInputTest, RejectsNonFiniteInputs) {
     BlackScholesEngine engine;
     const double nan = std::numeric_limits<double>::quiet_NaN();
-    for (auto set : {
-             [&](auto& in) { in.spot = nan; },
-             [&](auto& in) { in.strike = nan; },
-             [&](auto& in) { in.rate = nan; },
-             [&](auto& in) { in.dividend_yield = nan; },
-             [&](auto& in) { in.volatility = nan; },
-             [&](auto& in) { in.time_to_expiry = nan; },
+    // Each mutator has a distinct closure type, so they cannot share a
+    // braced-init-list directly (no common type to deduce). Wrapping in
+    // std::function homogenises the element type.
+    using Mutator = std::function<void(BlackScholesEngine::Inputs&)>;
+    for (const Mutator& set : {
+             Mutator{[&](auto& in) { in.spot = nan; }},
+             Mutator{[&](auto& in) { in.strike = nan; }},
+             Mutator{[&](auto& in) { in.rate = nan; }},
+             Mutator{[&](auto& in) { in.dividend_yield = nan; }},
+             Mutator{[&](auto& in) { in.volatility = nan; }},
+             Mutator{[&](auto& in) { in.time_to_expiry = nan; }},
          }) {
         auto in = canonical_call();
         set(in);

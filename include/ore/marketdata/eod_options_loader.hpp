@@ -130,6 +130,18 @@ public:
     };
 
     /**
+     * @brief The default `Options` used when a caller omits the argument.
+     *
+     * Returned by const reference to a function-local static. The load
+     * entry points below default to `= default_options()` rather than
+     * `= {}` because GCC rejects an in-class `Options{}` braced-init
+     * default argument — it would evaluate `Options`'s default member
+     * initializers before this enclosing class is complete. Routing
+     * through a function call defers that to the definition point.
+     */
+    [[nodiscard]] static const Options& default_options();
+
+    /**
      * @brief Parse a single OptionsDX archive file.
      *
      * @param file    Path to the `.txt`/`.csv` archive.
@@ -145,7 +157,7 @@ public:
      */
     [[nodiscard]] static std::vector<HistoricalSnapshot> load_file(
         const std::filesystem::path& file,
-        const Options& options = {});
+        const Options& options = default_options());
 
     /**
      * @brief Recursively load every archive file under `root`.
@@ -168,7 +180,7 @@ public:
      */
     [[nodiscard]] static std::vector<HistoricalSnapshot> load_directory(
         const std::filesystem::path& root,
-        const Options& options = {});
+        const Options& options = default_options());
 
     /**
      * @brief List every archive file that `load_directory` would
@@ -189,7 +201,7 @@ public:
      */
     [[nodiscard]] static std::vector<HistoricalSnapshot> parse_string(
         std::string_view text,
-        const Options& options = {},
+        const Options& options = default_options(),
         std::string source = "<memory>");
 };
 

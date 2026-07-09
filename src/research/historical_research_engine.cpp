@@ -106,6 +106,10 @@ process_one(ResearchStudy& study,
 
 } // namespace
 
+HistoricalResearchEngine::Config HistoricalResearchEngine::default_config() {
+    return Config{};
+}
+
 ResearchReport HistoricalResearchEngine::run_dispatch(ResearchStudy& study) {
     unsigned threads = config_.threads == 0 ? 1u : config_.threads;
 

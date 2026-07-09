@@ -26,10 +26,10 @@ Underlying make_underlying() {
 }
 
 MarketSnapshot make_market() {
-    return {472.15,
-            0.0525,
-            0.0145,
-            std::chrono::year{2026} / std::chrono::July / std::chrono::day{8}};
+    return {.spot           = 472.15,
+            .risk_free_rate = 0.0525,
+            .dividend_yield = 0.0145,
+            .valuation_date = std::chrono::year{2026} / std::chrono::July / std::chrono::day{8}};
 }
 
 OptionMarketSnapshot make_snap(double strike, OptionType type) {

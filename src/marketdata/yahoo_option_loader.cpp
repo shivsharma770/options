@@ -163,7 +163,7 @@ double csv_double(const CsvRow& row, std::string_view column, const std::string&
     }
 }
 
-long long csv_int(const CsvRow& row, std::string_view column, const std::string& source) {
+[[maybe_unused]] long long csv_int(const CsvRow& row, std::string_view column, const std::string& source) {
     try {
         return row.as_int(column);
     } catch (const CsvParseError& e) {

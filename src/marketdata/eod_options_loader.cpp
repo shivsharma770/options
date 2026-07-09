@@ -118,7 +118,7 @@ parse_iso_date(std::string_view s) {
 /// Parse a required double. Missing / malformed fields throw when
 /// the caller runs in strict mode; lenient mode returns `nullopt`
 /// and the row is skipped upstream.
-[[nodiscard]] std::optional<double> parse_double(std::string_view s) {
+[[maybe_unused, nodiscard]] std::optional<double> parse_double(std::string_view s) {
     return parse_optional_double(s);
 }
 
@@ -481,6 +481,11 @@ std::vector<std::string> required_columns() {
 }
 
 } // namespace
+
+const EodOptionsLoader::Options& EodOptionsLoader::default_options() {
+    static const Options defaults{};
+    return defaults;
+}
 
 //
 // load_file -------------------------------------------------------------------

@@ -84,7 +84,7 @@ From the repository root, from a **"x64 Native Tools Command Prompt for VS 2022"
 (or after running `vcvars64.bat`):
 
 ```bat
-cmake -S . -B build -G "Visual Studio 17 2022" -A x64
+cmake -S . -B build -G "Visual Studio 17 2022" -A x64 -DORE_BUILD_EXAMPLES=ON
 cmake --build build --config Debug
 ctest --test-dir build -C Debug --output-on-failure
 ```
@@ -92,17 +92,45 @@ ctest --test-dir build -C Debug --output-on-failure
 Alternatively, using Ninja (faster, single-config):
 
 ```bat
-cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug
+cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug -DORE_BUILD_EXAMPLES=ON
 cmake --build build
 ctest --test-dir build --output-on-failure
 ```
+
+## Build (Linux / macOS — GCC or Clang)
+
+Requires CMake ≥ 3.20, a C++20 compiler (GCC ≥ 12 or Clang ≥ 15), and
+internet access on first configure (GoogleTest is fetched via CMake).
+
+```sh
+cmake -S . -B build -DORE_BUILD_EXAMPLES=ON
+cmake --build build -j
+ctest --test-dir build --output-on-failure
+```
+
+### Running the historical calibration example
+
+`ORE_BUILD_EXAMPLES=ON` (used above) builds every driver under
+`examples/`, including `example_historical_calibration`, which runs
+`HistoricalCalibrationStudy` over the SPY archive and writes
+`calibration.csv`, `smiles.csv`, `term_structure.csv`, `surface.csv`,
+and `skew.csv` to `data/generated/research/`:
+
+```sh
+./build/examples/example_historical_calibration [root] [ticker] [threads] [max_days]
+# defaults: root=data/historical/spy ticker=SPY threads=all max_days=0 (all days)
+```
+
+Examples are **off by default** so the common `cmake -S . -B build`
+(tests-only) configure stays lean and does not require the historical
+data archives to be present; pass `-DORE_BUILD_EXAMPLES=ON` to opt in.
 
 ### CMake options
 
 | Option                | Default | Description                                     |
 | --------------------- | ------- | ----------------------------------------------- |
 | `ORE_BUILD_TESTS`     | `ON`    | Build the GoogleTest-based unit test target.    |
-| `ORE_BUILD_EXAMPLES`  | `OFF`   | Build executable examples under `examples/`.    |
+| `ORE_BUILD_EXAMPLES`  | `OFF`   | Build executable examples under `examples/` (opt-in; enable to build `example_historical_calibration`). |
 
 ## Roadmap
 
