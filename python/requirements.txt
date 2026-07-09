@@ -4,3 +4,10 @@
 # deliberately (never blindly).
 yfinance>=0.2.40,<0.3
 pandas>=2.0,<3.0
+
+# Research-phase analysis scripts (calibration_research.py, iv_rv_study.py,
+# iv_smile_forecast_study.py): read the generated study CSVs and run the
+# regressions, statistics, and figures.
+numpy>=1.24
+matplotlib>=3.7
+scipy>=1.10
